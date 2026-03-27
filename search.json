@@ -1,0 +1,164 @@
+[
+  {
+    "objectID": "sbom/generacion_sbom.html",
+    "href": "sbom/generacion_sbom.html",
+    "title": "Generación de SBOMs",
+    "section": "",
+    "text": "Este notebook explica el proceso para generar Software Bill of Materials (SBOMs) para un conjunto de repositorios de código y cómo analizar los resultados de manera centralizada. Utilizaremos la herramienta Syft para la generación y la librería Pandas en Python para el análisis.\nEl flujo de trabajo completo está diseñado para ser reproducible y se basa en las siguientes etapas:\n\nDescubrimiento de Repositorios: Identificar los proyectos a los que se les generará un SBOM.\nGeneración de SBOMs: Ejecutar Syft para analizar cada repositorio y crear un SBOM en formato JSON.\nAnálisis de Resultados: Cargar todos los SBOMs generados en un DataFrame de Pandas para su inspección y análisis.",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "sbom/generacion_sbom.html#objetivo",
+    "href": "sbom/generacion_sbom.html#objetivo",
+    "title": "Generación de SBOMs",
+    "section": "",
+    "text": "Este notebook explica el proceso para generar Software Bill of Materials (SBOMs) para un conjunto de repositorios de código y cómo analizar los resultados de manera centralizada. Utilizaremos la herramienta Syft para la generación y la librería Pandas en Python para el análisis.\nEl flujo de trabajo completo está diseñado para ser reproducible y se basa en las siguientes etapas:\n\nDescubrimiento de Repositorios: Identificar los proyectos a los que se les generará un SBOM.\nGeneración de SBOMs: Ejecutar Syft para analizar cada repositorio y crear un SBOM en formato JSON.\nAnálisis de Resultados: Cargar todos los SBOMs generados en un DataFrame de Pandas para su inspección y análisis.",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "sbom/generacion_sbom.html#estructura-de-directorios",
+    "href": "sbom/generacion_sbom.html#estructura-de-directorios",
+    "title": "Generación de SBOMs",
+    "section": "Estructura de Directorios",
+    "text": "Estructura de Directorios\nEl proyecto sigue una estructura organizada para separar los datos de entrada, los scripts y los resultados:\nciberseguridad_2026/\n├── data/\n│   ├── repos/      # Directorio para los repositorios a analizar\n│   └── results/    # Directorio para los SBOMs generados en JSON\n├── nbs/            # Notebooks de Jupyter\n└── scripts/        # Scripts de automatización\n    └── generate_sboms.py",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "sbom/generacion_sbom.html#paso-1-generación-de-sboms",
+    "href": "sbom/generacion_sbom.html#paso-1-generación-de-sboms",
+    "title": "Generación de SBOMs",
+    "section": "Paso 1: Generación de SBOMs",
+    "text": "Paso 1: Generación de SBOMs\nEl primer paso es ejecutar el script generate_sboms.py, que se encarga de orquestar la generación de los SBOMs.\nEste script realiza las siguientes acciones:\n\nBusca repositorios: Escanea el directorio data/repos en busca de subdirectorios que contengan código fuente.\nEjecuta Syft: Para cada repositorio encontrado, invoca a syft para analizar su contenido.\nGuarda los resultados: El SBOM generado para cada repositorio se guarda como un archivo JSON en el directorio data/results.\n\n\n!python ../../scripts/generate_sboms.py\n\nINFO | Usando Syft CLI: /usr/local/bin/syft\nINFO | [1/3] Procesando repositorio data/repos/claude-code-action\nINFO | SBOM guardado en data/results/claude-code-action.json\nINFO | [2/3] Procesando repositorio data/repos/genai-code-review\nINFO | SBOM guardado en data/results/genai-code-review.json\nINFO | [3/3] Procesando repositorio data/repos/opencode\nINFO | SBOM guardado en data/results/opencode.json\nINFO | Resumen final | total_repos=3 | repos_generados=3 | archivos_generados=3 | omitidos=0 | errores=0",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "sbom/generacion_sbom.html#paso-2-análisis-de-los-sboms-con-pandas",
+    "href": "sbom/generacion_sbom.html#paso-2-análisis-de-los-sboms-con-pandas",
+    "title": "Generación de SBOMs",
+    "section": "Paso 2: Análisis de los SBOMs con Pandas",
+    "text": "Paso 2: Análisis de los SBOMs con Pandas\nUna vez que los SBOMs han sido generados, podemos cargarlos en un DataFrame de Pandas para analizarlos. Esto nos permite tener una visión consolidada de todas las dependencias y artefactos encontrados en los diferentes repositorios.\nEl siguiente código se encarga de:\n\nLocalizar los archivos JSON: Busca todos los archivos .json en el directorio data/results.\nCargar y normalizar los datos: Para cada archivo JSON, lo carga y utiliza pd.json_normalize para aplanar la estructura anidada de los artefactos.\nAñadir información del repositorio: Agrega una columna repo para identificar a qué repositorio pertenece cada artefacto.\nConcatenar los resultados: Une todos los DataFrames individuales en uno solo.\n\n\nimport pandas as pd\nfrom pathlib import Path\nimport json\n\npath = Path(\"../../data/results\")\n\ndf_all = pd.concat(\n    [\n        pd.json_normalize(json.load(open(file))[\"artifacts\"]).assign(repo=file.stem)\n        for file in path.glob(\"*.json\")\n    ],\n    ignore_index=True\n)\n\ndf_all.head()\n\n\n\n\n\n\n\n\nid\nname\nversion\ntype\nfoundBy\nlocations\nlicenses\nlanguage\ncpes\npurl\n...\nmetadata.dependencies.@actions/core\nmetadata.dependencies.shell-quote\nmetadata.comment\nmetadata.dependencies.@fastify/busboy\nrepo\nmetadata.name\nmetadata.versionConstraint\nmetadata.version\nmetadata.source\nmetadata.checksum\n\n\n\n\n0\n3dde6d26a8867975\n./.github/workflows/ci.yml\nUNKNOWN\ngithub-action-workflow\ngithub-action-workflow-usage-cataloger\n[{'path': '/.github/workflows/ci-all.yml', 'ac...\n[]\n\n[{'cpe': 'cpe:2.3:a:.\\/.github\\/workflows\\/ci....\n\n...\nNaN\nNaN\nNaN\nNaN\nclaude-code-action\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n1\n9166fd4b121e55f3\n./.github/workflows/test-base-action.yml\nUNKNOWN\ngithub-action-workflow\ngithub-action-workflow-usage-cataloger\n[{'path': '/.github/workflows/ci-all.yml', 'ac...\n[]\n\n[{'cpe': 'cpe:2.3:a:.\\/.github\\/workflows\\/tes...\n\n...\nNaN\nNaN\nNaN\nNaN\nclaude-code-action\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n2\n95afc7fec8addb9b\n./.github/workflows/test-custom-executables.yml\nUNKNOWN\ngithub-action-workflow\ngithub-action-workflow-usage-cataloger\n[{'path': '/.github/workflows/ci-all.yml', 'ac...\n[]\n\n[{'cpe': 'cpe:2.3:a:.\\/.github\\/workflows\\/tes...\n\n...\nNaN\nNaN\nNaN\nNaN\nclaude-code-action\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n3\nf535590207532289\n./.github/workflows/test-mcp-servers.yml\nUNKNOWN\ngithub-action-workflow\ngithub-action-workflow-usage-cataloger\n[{'path': '/.github/workflows/ci-all.yml', 'ac...\n[]\n\n[{'cpe': 'cpe:2.3:a:.\\/.github\\/workflows\\/tes...\n\n...\nNaN\nNaN\nNaN\nNaN\nclaude-code-action\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n4\nbdedac1ea6288e33\n./.github/workflows/test-settings.yml\nUNKNOWN\ngithub-action-workflow\ngithub-action-workflow-usage-cataloger\n[{'path': '/.github/workflows/ci-all.yml', 'ac...\n[]\n\n[{'cpe': 'cpe:2.3:a:.\\/.github\\/workflows\\/tes...\n\n...\nNaN\nNaN\nNaN\nNaN\nclaude-code-action\nNaN\nNaN\nNaN\nNaN\nNaN\n\n\n\n\n5 rows × 30 columns",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "sbom/generacion_sbom.html#exploración-de-los-resultados",
+    "href": "sbom/generacion_sbom.html#exploración-de-los-resultados",
+    "title": "Generación de SBOMs",
+    "section": "Exploración de los Resultados",
+    "text": "Exploración de los Resultados\nCon los datos en un DataFrame, podemos realizar diversas consultas y análisis. Por ejemplo, podemos ver cuántos artefactos se encontraron por cada repositorio.\n\ndf_all['repo'].value_counts()\n\nrepo\nopencode              775\nclaude-code-action     37\ngenai-code-review       5\nName: count, dtype: int64\n\n\nTambién podemos ver las licencias más comunes encontradas en todas las dependencias.\n\ndf_all['licenses'].explode().value_counts().head(10)\n\nlicenses\n{'value': 'MIT', 'spdxExpression': 'MIT', 'type': 'declared', 'urls': [], 'locations': [{'path': '/base-action/package-lock.json', 'accessPath': '/base-action/package-lock.json', 'annotations': {'evidence': 'primary'}}]}    8\nName: count, dtype: int64",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "sbom/generacion_sbom.html#cómo-añadir-nuevos-repositorios-al-análisis",
+    "href": "sbom/generacion_sbom.html#cómo-añadir-nuevos-repositorios-al-análisis",
+    "title": "Generación de SBOMs",
+    "section": "Cómo Añadir Nuevos Repositorios al Análisis",
+    "text": "Cómo Añadir Nuevos Repositorios al Análisis\nEl proyecto está diseñado para que sea sencillo añadir nuevos repositorios al proceso de generación de SBOMs. El sistema utiliza Git submodules para gestionar los repositorios externos.\nSigue estos pasos para añadir un nuevo repositorio:\n\n1. Edita el Archivo repos.json\nAbre el archivo data/repos.json. Este archivo contiene una lista de los repositorios que se van a analizar. Para añadir uno nuevo, simplemente agrega un nuevo objeto JSON al array repositories con la siguiente estructura:\n{\n  \"url\": \"URL_DEL_REPOSITORIO_EN_GITHUB.git\",\n  \"path\": \"data/repos/NOMBRE_DEL_REPOSITORIO\"\n}\n\nurl: La URL .git del repositorio que quieres clonar.\npath: La ruta local donde se clonará el repositorio. Se recomienda mantenerlo dentro de data/repos/.\n\n\nTip: Si estás utilizando el Dev Container, este proceso está automatizado. Simplemente necesitas reconstruir el contenedor después de modificar el archivo repos.json, y los pasos 2 y 3 se ejecutarán automáticamente al iniciar el contenedor.\n\n\n\n2. Ejecuta el Script para Añadir Submódulos\nUna vez que hayas guardado los cambios en repos.json, necesitas ejecutar el script add_submodules.py. Este script leerá el archivo JSON y añadirá los nuevos repositorios como submódulos de Git.\nPuedes ejecutarlo desde la terminal:\nuv run scripts/add_submodules.py\n\n\n3. Actualiza los Submódulos\nDespués de añadir los submódulos, necesitas que Git los clone. Ejecuta el siguiente comando:\ngit submodule update --init --recursive",
+    "crumbs": [
+      "SBOM",
+      "Generación de SBOMs"
+    ]
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "Ciberseguridad_2026",
+    "section": "",
+    "text": "Apuntes del curso de Ciberseguridad (ICC610)\nBienvenido/a al repositorio de Ciberseguridad_2026.\nEste proyecto está preparado para que trabajes en un entorno de desarrollo completamente configurado usando Dev Containers en Visual Studio Code.",
+    "crumbs": [
+      "Ciberseguridad_2026"
+    ]
+  },
+  {
+    "objectID": "index.html#prerrequisitos",
+    "href": "index.html#prerrequisitos",
+    "title": "Ciberseguridad_2026",
+    "section": "📋 Prerrequisitos",
+    "text": "📋 Prerrequisitos\nAntes de comenzar, asegúrate de tener instalado lo siguiente:\n\n1. Docker\nDescárgalo desde: https://www.docker.com/get-started\n\nImportante: Asegúrate de que Docker esté corriendo correctamente en tu sistema.\n\n\n\n2. Visual Studio Code\nDescárgalo desde: https://code.visualstudio.com/\n\n\n3. Extensión Dev Containers\nInstálala desde: Dev Containers Extension",
+    "crumbs": [
+      "Ciberseguridad_2026"
+    ]
+  },
+  {
+    "objectID": "index.html#pasos-para-comenzar",
+    "href": "index.html#pasos-para-comenzar",
+    "title": "Ciberseguridad_2026",
+    "section": "🚀 Pasos para comenzar",
+    "text": "🚀 Pasos para comenzar\n\n1. Clona este repositorio\ngit clone https://github.com/dci-courses/ciberseguridad_2026.git\ncd ciberseguridad_2026\n\n\n2. Abre el proyecto en VS Code\ncode .\n\n\n3. Reconstruye y abre el contenedor de desarrollo\nDentro de VS Code:\n\nPresiona Ctrl + Shift + P (o Cmd + Shift + P en Mac)\nEscribe y selecciona: Dev Containers: Rebuild and Reopen in Container \n\nEsto reiniciará VS Code dentro de un contenedor Docker con el entorno preconfigurado.\n\n\n4. Configura el kernel de Jupyter\n\nAbre cualquier notebook .ipynb\nAl ejecutar una celda por primera vez, selecciona el kernel: ciberseguridad-2026",
+    "crumbs": [
+      "Ciberseguridad_2026"
+    ]
+  },
+  {
+    "objectID": "sbom/explicacion_script_sbom.html",
+    "href": "sbom/explicacion_script_sbom.html",
+    "title": "Script detallado",
+    "section": "",
+    "text": "El script comienza importando las librerías necesarias y definiendo constantes clave que se usarán a lo largo del script. Esto centraliza la configuración y facilita su modificación.\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport shutil\nimport subprocess\nfrom pathlib import Path\n\n\nRUTA_BASE_SBOMS = Path(__file__).resolve().parents[1]\nRUTA_REPOS_POR_DEFECTO = RUTA_BASE_SBOMS / \"data\" / \"repos\"\nRUTA_RESULTADOS_POR_DEFECTO = RUTA_BASE_SBOMS / \"data\" / \"results\"\nFORMATO_SALIDA_SYFT = \"syft-json\"\nSUFIJO_SBOM = \".json\"\nSUFIJOS_LEGADOS = (\".spdx.json\", \".cyclonedx.json\")\nMENSAJE_SYFT_NO_INSTALADO = (\n    \"Syft CLI is not installed. Please install it (e.g., `brew install syft`).\"\n)\n\n\nif not logging.getLogger().handlers:\n    logging.basicConfig(level=logging.INFO, format=\"%(levelname)s | %(message)s\")\nLOGGER = logging.getLogger(__name__)\nPATRON_ANSI = re.compile(r\"\\x1b\\[[0-9;?]*[ -/]*[@-~]\")",
+    "crumbs": [
+      "SBOM",
+      "Script detallado"
+    ]
+  },
+  {
+    "objectID": "sbom/explicacion_script_sbom.html#importaciones-y-constantes",
+    "href": "sbom/explicacion_script_sbom.html#importaciones-y-constantes",
+    "title": "Script detallado",
+    "section": "",
+    "text": "El script comienza importando las librerías necesarias y definiendo constantes clave que se usarán a lo largo del script. Esto centraliza la configuración y facilita su modificación.\nfrom __future__ import annotations\n\nimport argparse\nimport json\nimport logging\nimport re\nimport shutil\nimport subprocess\nfrom pathlib import Path\n\n\nRUTA_BASE_SBOMS = Path(__file__).resolve().parents[1]\nRUTA_REPOS_POR_DEFECTO = RUTA_BASE_SBOMS / \"data\" / \"repos\"\nRUTA_RESULTADOS_POR_DEFECTO = RUTA_BASE_SBOMS / \"data\" / \"results\"\nFORMATO_SALIDA_SYFT = \"syft-json\"\nSUFIJO_SBOM = \".json\"\nSUFIJOS_LEGADOS = (\".spdx.json\", \".cyclonedx.json\")\nMENSAJE_SYFT_NO_INSTALADO = (\n    \"Syft CLI is not installed. Please install it (e.g., `brew install syft`).\"\n)\n\n\nif not logging.getLogger().handlers:\n    logging.basicConfig(level=logging.INFO, format=\"%(levelname)s | %(message)s\")\nLOGGER = logging.getLogger(__name__)\nPATRON_ANSI = re.compile(r\"\\x1b\\[[0-9;?]*[ -/]*[@-~]\")",
+    "crumbs": [
+      "SBOM",
+      "Script detallado"
+    ]
+  },
+  {
+    "objectID": "sbom/explicacion_script_sbom.html#la-clase-sbomgenerator",
+    "href": "sbom/explicacion_script_sbom.html#la-clase-sbomgenerator",
+    "title": "Script detallado",
+    "section": "2. La Clase SBOMGenerator",
+    "text": "2. La Clase SBOMGenerator\nEsta es la clase principal que encapsula toda la lógica para descubrir repositorios, generar SBOMs y guardarlos en disco.\n\n__init__\nEl constructor inicializa las rutas y otras variables de instancia. Guarda la ruta raíz del proyecto para poder trabajar con rutas relativas, lo que hace que los logs sean más limpios.\nclass SBOMGenerator:\n    def __init__(self, repos_path: str, output_path: str):\n        self.repos_path = Path(repos_path).expanduser().resolve()\n        self.output_path = Path(output_path).expanduser().resolve()\n        self.project_root = Path(__file__).resolve().parents[1]\n        self.syft_bin = \"syft\"\n        self.dry_run = False\n        self.syft_path: str | None = None\n\n\ndiscover_repositories\nEste método escanea el directorio data/repos y crea una lista ordenada de las rutas relativas de todos los subdirectorios que encuentra. Estas son las rutas a los repositorios que se analizarán.\n    def discover_repositories(self) -&gt; list[str]:\n        \"\"\"Devuelve una lista de rutas de repositorios.\"\"\"\n        self._validar_directorio_repos()\n\n        repositorios = sorted(\n            str(ruta.relative_to(self.project_root))\n            for ruta in self.repos_path.iterdir()\n            if ruta.is_dir()\n        )\n\n        if not repositorios:\n            LOGGER.warning(\"No se encontraron repositorios en %s\", self.repos_path)\n\n        return repositorios\n\n\ngenerate_sbom\nAquí ocurre la magia. El método toma la ruta de un repositorio, construye el comando syft apropiado y lo ejecuta como un subproceso. Captura la salida (el SBOM en formato JSON), la limpia de caracteres no deseados y la devuelve como una cadena de texto validada.\n    def generate_sbom(self, repo_path: str) -&gt; str:\n        \"\"\"Ejecuta Syft y devuelve el SBOM JSON nativo.\"\"\"\n        ruta_repo = self.project_root / repo_path\n\n        if not ruta_repo.exists():\n            raise FileNotFoundError(f\"El repositorio no existe: {ruta_repo}\")\n\n        if not ruta_repo.is_dir():\n            raise NotADirectoryError(f\"La ruta no es un directorio: {ruta_repo}\")\n\n        if not any(ruta_repo.iterdir()):\n            raise ValueError(f\"El repositorio esta vacio: {ruta_repo}\")\n\n        comando = self._construir_comando_syft(ruta_repo)\n        resultado = subprocess.run(\n            comando,\n            capture_output=True,\n            text=True,\n            check=False,\n        )\n\n        if resultado.returncode != 0:\n            detalle_error = resultado.stderr.strip() or \"Syft termino con un error desconocido.\"\n            raise RuntimeError(\n                f\"No fue posible generar el SBOM para {ruta_repo.name}: {detalle_error}\"\n            )\n\n        salida = self._normalizar_sbom_json(resultado.stdout)\n        if not salida.strip():\n            raise RuntimeError(f\"Syft no devolvio contenido para {ruta_repo.name}.\")\n\n        try:\n            json.loads(salida)\n        except json.JSONDecodeError as error:\n            raise RuntimeError(\n                f\"Syft devolvio un JSON invalido para {ruta_repo.name}.\"\n            ) from error\n\n        return salida\n\n\nsave_sbom\nUna vez generado el SBOM, este método se encarga de guardarlo en el disco, dentro del directorio data/results. El nombre del archivo se basa en el nombre del repositorio y se añade el sufijo .json.\n    def save_sbom(self, repo_name: str, sbom_data: str) -&gt; Path:\n        \"\"\"Guarda el SBOM en el directorio de salida.\"\"\"\n        if not repo_name:\n            raise ValueError(\"El nombre del repositorio no puede estar vacio.\")\n\n        self.output_path.mkdir(parents=True, exist_ok=True)\n        ruta_salida = self.output_path / f\"{repo_name}{SUFIJO_SBOM}\"\n        ruta_salida.write_text(sbom_data, encoding=\"utf-8\")\n        LOGGER.info(\"SBOM guardado en %s\", ruta_salida.relative_to(self.project_root))\n        return ruta_salida\n\n\nrun\nEste es el método orquestador que une todo. Llama a los otros métodos en secuencia para cada repositorio encontrado: descubre, valida, genera y guarda. También se encarga de la lógica de dry-run, manejo de errores y genera un resumen final con estadísticas.\n    def run(self):\n        \"\"\"Orquesta el descubrimiento y la generacion de SBOMs.\"\"\"\n        repositorios = self.discover_repositories()\n        self._validar_directorio_salida()\n\n        if not repositorios:\n            return\n\n        if not self.dry_run:\n            self.syft_path = self._resolver_syft()\n            LOGGER.info(\"Usando Syft CLI: %s\", self.syft_path)\n\n        self.output_path.mkdir(parents=True, exist_ok=True)\n\n        repositorios_generados = 0\n        archivos_generados = 0\n        omitidos = 0\n        errores = 0\n\n        for indice, repo_path in enumerate(repositorios, start=1):\n            ruta_repo = self.project_root / repo_path\n            LOGGER.info(\n                \"[%s/%s] Procesando repositorio %s\",\n                indice,\n                len(repositorios),\n                repo_path,\n            )\n\n            if self.dry_run:\n                if not any(ruta_repo.iterdir()):\n                    LOGGER.warning(\n                        \"[%s/%s] Se omite %s porque esta vacio.\",\n                        indice,\n                        len(repositorios),\n                        ruta_repo.name,\n                    )\n                    omitidos += 1\n                    continue\n\n                ruta_salida = self.output_path / f\"{ruta_repo.name}{SUFIJO_SBOM}\"\n                LOGGER.info(\n                    \"[%s/%s] Dry-run: se generaria %s\",\n                    indice,\n                    len(repositorios),\n                    ruta_salida.relative_to(self.project_root),\n                )\n                continue\n\n            try:\n                sbom_data = self.generate_sbom(repo_path)\n                self.save_sbom(ruta_repo.name, sbom_data)\n                self._eliminar_archivos_legados(ruta_repo.name)\n                repositorios_generados += 1\n                archivos_generados += 1\n            except Exception as error:\n                errores += 1\n                self._eliminar_archivos_parciales(ruta_repo.name)\n                LOGGER.error(\n                    \"[%s/%s] Error al procesar %s: %s\",\n                    indice,\n                    len(repositorios),\n                    repo_path,\n                    error,\n                )\n\n        LOGGER.info(\n            \"Resumen final | total_repos=%s | repos_generados=%s | archivos_generados=%s | omitidos=%s | errores=%s\",\n            len(repositorios),\n            repositorios_generados,\n            archivos_generados,\n            omitidos,\n            errores,\n        )",
+    "crumbs": [
+      "SBOM",
+      "Script detallado"
+    ]
+  },
+  {
+    "objectID": "sbom/explicacion_script_sbom.html#métodos-auxiliares-privados",
+    "href": "sbom/explicacion_script_sbom.html#métodos-auxiliares-privados",
+    "title": "Script detallado",
+    "section": "3. Métodos Auxiliares Privados",
+    "text": "3. Métodos Auxiliares Privados\nEl script incluye varios métodos privados (prefijados con _) que realizan tareas específicas de validación, normalización y gestión de archivos.\n    def _validar_directorio_repos(self):\n        if not self.repos_path.exists():\n            raise FileNotFoundError(\n                f\"El directorio de repositorios no existe: {self.repos_path}\"\n            )\n\n        if not self.repos_path.is_dir():\n            raise NotADirectoryError(\n                f\"La ruta de repositorios no es un directorio: {self.repos_path}\"\n            )\n\n    def _resolver_syft(self) -&gt; str:\n        ruta_syft = shutil.which(self.syft_bin)\n        if not ruta_syft:\n            raise RuntimeError(MENSAJE_SYFT_NO_INSTALADO)\n\n        return ruta_syft\n\n    def _construir_comando_syft(self, ruta_repo: Path) -&gt; list[str]:\n        ruta_syft = self.syft_path or self._resolver_syft()\n        return [ruta_syft, f\"dir:{ruta_repo}\", \"-o\", FORMATO_SALIDA_SYFT]\n\n    def _normalizar_sbom_json(self, salida_cruda: str) -&gt; str:\n        \"\"\"Limpia ruido accidental y reserializa el resultado como JSON valido.\"\"\"\n        if not salida_cruda or not salida_cruda.strip():\n            return \"\"\n\n        texto_limpio = PATRON_ANSI.sub(\"\", salida_cruda).replace(\"\\ufeff\", \"\").strip()\n        candidatos = [texto_limpio]\n\n        inicio_objeto = texto_limpio.find(\"{\")\n        fin_objeto = texto_limpio.rfind(\"}\")\n        if inicio_objeto != -1 and fin_objeto != -1 and inicio_objeto &lt; fin_objeto:\n            candidatos.append(texto_limpio[inicio_objeto : fin_objeto + 1])\n\n        inicio_lista = texto_limpio.find(\"[\")\n        fin_lista = texto_limpio.rfind(\"]\")\n        if inicio_lista != -1 and fin_lista != -1 and inicio_lista &lt; fin_lista:\n            candidatos.append(texto_limpio[inicio_lista : fin_lista + 1])\n\n        for candidato in candidatos:\n            try:\n                contenido = json.loads(candidato)\n            except json.JSONDecodeError:\n                continue\n\n            return json.dumps(contenido, ensure_ascii=False, indent=2)\n\n        raise RuntimeError(\"Syft devolvio una salida que no pudo normalizarse a JSON valido.\")\n\n    def _eliminar_archivos_parciales(self, repo_name: str):\n        ruta_salida = self.output_path / f\"{repo_name}{SUFIJO_SBOM}\"\n        if ruta_salida.exists():\n            ruta_salida.unlink()\n\n    def _eliminar_archivos_legados(self, repo_name: str):\n        for sufijo in SUFIJOS_LEGADOS:\n            ruta_salida = self.output_path / f\"{repo_name}{sufijo}\"\n            if ruta_salida.exists():\n                ruta_salida.unlink()\n                LOGGER.info(\"Archivo legado eliminado: %s\", ruta_salida)",
+    "crumbs": [
+      "SBOM",
+      "Script detallado"
+    ]
+  },
+  {
+    "objectID": "sbom/explicacion_script_sbom.html#ejecución-desde-la-línea-de-comandos",
+    "href": "sbom/explicacion_script_sbom.html#ejecución-desde-la-línea-de-comandos",
+    "title": "Script detallado",
+    "section": "4. Ejecución desde la Línea de Comandos",
+    "text": "4. Ejecución desde la Línea de Comandos\nFinalmente, el script define funciones para construir un analizador de argumentos y ejecutar la generación de SBOMs. El bloque if __name__ == \"__main__\" se asegura de que el código de ejecución solo se corra cuando el archivo es el punto de entrada principal.\ndef _construir_parser() -&gt; argparse.ArgumentParser:\n    parser = argparse.ArgumentParser(\n        description=\"Genera SBOMs en JSON para todos los repositorios usando Syft.\"\n    )\n    parser.add_argument(\n        \"--repos-path\",\n        default=str(RUTA_REPOS_POR_DEFECTO),\n        help=\"Ruta al directorio que contiene los repositorios a analizar.\",\n    )\n    parser.add_argument(\n        \"--output-path\",\n        default=str(RUTA_RESULTADOS_POR_DEFECTO),\n        help=\"Ruta al directorio donde se guardaran los SBOMs.\",\n    )\n    parser.add_argument(\n        \"--dry-run\",\n        action=\"store_true\",\n        help=\"Muestra que repositorios se procesarian sin ejecutar Syft.\",\n    )\n    return parser\n\n\ndef main() -&gt; int:\n    parser = _construir_parser()\n    args = parser.parse_args()\n\n    generador = SBOMGenerator(args.repos_path, args.output_path)\n    generador.dry_run = args.dry_run\n    try:\n        generador.run()\n    except Exception as error:\n        LOGGER.error(\"%s\", error)\n        return 1\n\n    return 0\n\n\nif __name__ == \"__main__\":\n    raise SystemExit(main())",
+    "crumbs": [
+      "SBOM",
+      "Script detallado"
+    ]
+  }
+]
