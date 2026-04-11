@@ -11,3 +11,5 @@ website:
                   - vuln/introduccion_vulnerabilidades.ipynb
                   - vuln/generacion_codeql.ipynb
                   - vuln/explicacion_script_codeql.ipynb
+                  - vuln/generacion_grype.ipynb
+                  - vuln/explicacion_script_grype.ipynb

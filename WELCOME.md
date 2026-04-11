@@ -149,6 +149,9 @@ uv run scripts/add_submodules.py && git submodule update --init --recursive
 
 ### Problemas Comunes
 
+**❌ La ejecución en el notebook no comienza o carga permanentemente**
+El kernel puede mantener bloqueado a vscode, reinicia la ventana con `Ctrl + Shift + P` -> `Developer: reload window` o simplemente cierra y abre vscode.
+
 **Error: "CodeQL CLI not found"**
 
 - Verificar: `codeql version`

@@ -244,7 +244,7 @@ de Grype - Próximas aperturas serán mucho más rápidas
 `Jupyter: Select Kernel` 
 4. Elige `Python (ciberseguridad)`
 
-### ❌ “La ejecucion en el notebook no comienza o carga permanentemente”
+### ❌ “La ejecución en el notebook no comienza o carga permanentemente”
 **Solución**: El kernel puede mantener bloqueado a vscode, reinicia la ventana con `Ctrl + Shift + P` -> `Developer: reload window` o simplemente cierra y abre vscode.
 
 
