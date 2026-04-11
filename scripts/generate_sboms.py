@@ -13,7 +13,7 @@ RUTA_BASE_SBOMS = Path(__file__).resolve().parents[1]
 RUTA_REPOS_POR_DEFECTO = RUTA_BASE_SBOMS / "data" / "repos"
 RUTA_RESULTADOS_POR_DEFECTO = RUTA_BASE_SBOMS / "data" / "results"
 FORMATO_SALIDA_SYFT = "syft-json"
-SUFIJO_SBOM = ".json"
+SUFIJO_SBOM = "-sbom.json"
 SUFIJOS_LEGADOS = (".spdx.json", ".cyclonedx.json")
 MENSAJE_SYFT_NO_INSTALADO = (
     "Syft CLI is not installed. Please install it (e.g., `brew install syft`)."

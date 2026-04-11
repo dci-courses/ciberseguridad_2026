@@ -236,9 +236,17 @@ de Grype - Próximas aperturas serán mucho más rápidas
 
 ### ❌ “Python kernel no aparece en Jupyter”
 
-**Solución**: Reinicia el kernel manualmente 1. Abre un notebook
-`.ipynb` 2. Presiona `Ctrl + Shift + P` 3. Selecciona
-`Jupyter: Select Kernel` 4. Elige `Python (ciberseguridad)`
+**Solución**: Reinicia el kernel manualmente 
+1. Abre un notebook
+`.ipynb` 
+2. Presiona `Ctrl + Shift + P` 
+3. Selecciona
+`Jupyter: Select Kernel` 
+4. Elige `Python (ciberseguridad)`
+
+### ❌ “La ejecucion en el notebook no comienza o carga permanentemente”
+**Solución**: El kernel puede mantener bloqueado a vscode, reinicia la ventana con `Ctrl + Shift + P` -> `Developer: reload window` o simplemente cierra y abre vscode.
+
 
 ### ❌ “CodeQL análisis falla”
 
