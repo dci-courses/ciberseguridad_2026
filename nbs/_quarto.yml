@@ -2,11 +2,17 @@ project:
     type: website
     output-dir: _docs
     render:
-        - "*.ipynb"
-        - "sbom/*.ipynb"
-        - "sbom/*.md"
-        - "vuln/*.ipynb"
-        - "vuln/*.md"
+        - "index.ipynb"
+        - "sbom/introduccion_sboms.md"
+        - "sbom/generacion_sbom.ipynb"
+        - "sbom/explicacion_script_sbom.ipynb"
+        - "vuln/introduccion_sboms.md"
+        - "vuln/introduccion_vulnerabilidades.md"
+        - "vuln/taxonomia_vulnerabilidades.md"
+        - "vuln/generacion_codeql.ipynb"
+        - "vuln/explicacion_script_codeql.ipynb"
+        - "vuln/generacion_grype.ipynb"
+        - "vuln/explicacion_script_grype.ipynb"
 lang: es
 format:
     html:
