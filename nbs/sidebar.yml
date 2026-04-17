@@ -9,9 +9,6 @@ website:
                   - sbom/explicacion_script_sbom.ipynb
             - section: Vulnerabilidades
               contents:
-                  - vuln/introduccion_vulnerabilidades.md
-                  - vuln/taxonomia_vulnerabilidades.md
-                  - vuln/caso_litellm.md
                   - vuln/introduccion_vulnerabilidades.ipynb
                   - vuln/generacion_codeql.ipynb
                   - vuln/explicacion_script_codeql.ipynb
