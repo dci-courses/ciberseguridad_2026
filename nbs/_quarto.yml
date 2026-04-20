@@ -4,6 +4,8 @@ project:
     render:
         - "index.ipynb"
         - "sbom/introduccion_sboms.md"
+        - "sbom/SBOMS_en_la_actualidad.md"
+        - "sbom/preguntas.md"
         - "sbom/generacion_sbom.ipynb"
         - "sbom/explicacion_script_sbom.ipynb"
         - "vuln/introduccion_sboms.md"
