@@ -67,8 +67,6 @@ details.qa .respuesta ul:last-child {
 }
 </style>
 
-# Preguntas sobre SBOMs
-
 Esta página funciona como una guía de autoevaluación. Cada pregunta incluye una respuesta desplegable para que puedas intentar responder primero y luego contrastar tu razonamiento.
 
 ## Lo que deberías saber
