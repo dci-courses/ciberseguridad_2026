@@ -20,4 +20,4 @@ website:
                   - vuln/explicacion_script_codeql.ipynb
                   - vuln/generacion_grype.ipynb
                   - vuln/explicacion_script_grype.ipynb
-                  - vuln/analisis_vulnerabilidades.ipynb
+                  - vuln/analisis_final.ipynb
