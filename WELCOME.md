@@ -71,6 +71,7 @@ Los resultados se guardan en `data/results/`:
 | **Generación de SBOMs**     | `nbs/sbom/generacion_sbom.ipynb`   | Genera Software Bill of Materials usando Syft               |
 | **Análisis CodeQL**         | `nbs/vuln/generacion_codeql.ipynb` | Análisis de seguridad estático (vulnerabilidades en código) |
 | **Escaneo de Dependencias** | `nbs/vuln/generacion_grype.ipynb`  | Escanea vulnerabilidades en dependencias usando Grype       |
+| **Secretos expuestos**      | `nbs/secrets/explicacion_gitleaks.md` | Explica detección de secretos en repositorios usando Gitleaks |
 
 ### Scripts
 
@@ -93,11 +94,13 @@ ciberseguridad_2026/
 │   └── repos.json       # Configuración de repos
 ├── nbs/                 # Notebooks Jupyter
 │   ├── sbom/            # Análisis de SBOMs
-│   └── vuln/            # Análisis de vulnerabilidades
+│   ├── vuln/            # Análisis de vulnerabilidades
 │       ├── generacion_codeql.ipynb          # CodeQL
 │       ├── explicacion_script_codeql.ipynb
 │       ├── generacion_grype.ipynb           # Grype
 │       └── explicacion_script_grype.ipynb
+│   └── secrets/         # Detección de secretos expuestos
+│       └── explicacion_gitleaks.md
 ├── scripts/             # Automatización
 │   ├── generate_sboms.py
 │   ├── generate_codeql.py

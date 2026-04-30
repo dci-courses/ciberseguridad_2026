@@ -164,7 +164,9 @@ Lee el contenido de: - **`WELCOME.md`**: Guía general del proyecto -
 **`nbs/sbom/generacion_sbom.ipynb`**: Notebook para generar SBOMs -
 **`nbs/vuln/generacion_codeql.ipynb`**: Notebook para ejecutar análisis
 estático (CodeQL) - **`nbs/vuln/generacion_grype.ipynb`**: Notebook para
-escanear vulnerabilidades en dependencias (Grype)
+escanear vulnerabilidades en dependencias (Grype) -
+**`nbs/secrets/explicacion_gitleaks.md`**: Unidad conceptual sobre
+detección de secretos expuestos con Gitleaks
 
 ### 3. Ejecutar tu Primer Análisis
 
@@ -198,11 +200,13 @@ Los resultados se guardarán en `data/results/`
     │   └── repos.json          # Configuración de repositorios
     ├── nbs/                    # Notebooks Jupyter
     │   ├── sbom/               # Análisis de SBOMs
-    │   └── vuln/               # Análisis de vulnerabilidades
+    │   ├── vuln/               # Análisis de vulnerabilidades
     │       ├── generacion_codeql.ipynb          # Análisis estático
     │       ├── explicacion_script_codeql.ipynb
     │       ├── generacion_grype.ipynb           # Escaneo de dependencias
     │       └── explicacion_script_grype.ipynb
+    │   └── secrets/            # Detección de secretos expuestos
+    │       └── explicacion_gitleaks.md
     ├── scripts/                # Automatización
     │   ├── generate_sboms.py
     │   ├── generate_codeql.py
