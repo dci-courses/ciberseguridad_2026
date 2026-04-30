@@ -72,6 +72,7 @@ Los resultados se guardan en `data/results/`:
 | **Análisis CodeQL**         | `nbs/vuln/generacion_codeql.ipynb` | Análisis de seguridad estático (vulnerabilidades en código) |
 | **Escaneo de Dependencias** | `nbs/vuln/generacion_grype.ipynb`  | Escanea vulnerabilidades en dependencias usando Grype       |
 | **Secretos expuestos**      | `nbs/secrets/explicacion_gitleaks.md` | Explica detección de secretos en repositorios usando Gitleaks |
+| **Casos reales de secretos** | `nbs/secrets/casos_reales.md` | Documenta incidentes reales de exposición de credenciales |
 
 ### Scripts
 
@@ -100,7 +101,8 @@ ciberseguridad_2026/
 │       ├── generacion_grype.ipynb           # Grype
 │       └── explicacion_script_grype.ipynb
 │   └── secrets/         # Detección de secretos expuestos
-│       └── explicacion_gitleaks.md
+│       ├── explicacion_gitleaks.md
+│       └── casos_reales.md
 ├── scripts/             # Automatización
 │   ├── generate_sboms.py
 │   ├── generate_codeql.py

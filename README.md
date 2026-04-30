@@ -166,7 +166,9 @@ Lee el contenido de: - **`WELCOME.md`**: Guía general del proyecto -
 estático (CodeQL) - **`nbs/vuln/generacion_grype.ipynb`**: Notebook para
 escanear vulnerabilidades en dependencias (Grype) -
 **`nbs/secrets/explicacion_gitleaks.md`**: Unidad conceptual sobre
-detección de secretos expuestos con Gitleaks
+detección de secretos expuestos con Gitleaks -
+**`nbs/secrets/casos_reales.md`**: Casos reales de exposición de
+credenciales
 
 ### 3. Ejecutar tu Primer Análisis
 
@@ -206,7 +208,8 @@ Los resultados se guardarán en `data/results/`
     │       ├── generacion_grype.ipynb           # Escaneo de dependencias
     │       └── explicacion_script_grype.ipynb
     │   └── secrets/            # Detección de secretos expuestos
-    │       └── explicacion_gitleaks.md
+    │       ├── explicacion_gitleaks.md
+    │       └── casos_reales.md
     ├── scripts/                # Automatización
     │   ├── generate_sboms.py
     │   ├── generate_codeql.py

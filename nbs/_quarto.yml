@@ -20,6 +20,7 @@ project:
         - "vuln/explicacion_script_grype.ipynb"
         - "vuln/analisis_de_datos.ipynb"
         - "secrets/explicacion_gitleaks.md"
+        - "secrets/casos_reales.md"
 lang: es
 format:
     html:
